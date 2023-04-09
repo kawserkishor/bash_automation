@@ -36,14 +36,16 @@ cat results.$target_domain.txt | uniq > subdomains.$target_domain.txt
 #rm -r results..$target_domain.txt
 
 # Get all the URLs
-#cat subdomains.$target_domain.txt | waybackurls > urls.$target_domain.txt
+echo -e "Getting all the URLs into urls.$target_domain.txt file. \n"
+cat subdomains.$target_domain.txt | waybackurls > urls.$target_domain.txt
 
 # Using HTTPX
 echo -e "Getting status code using httpx and saving the results in httpx.$target_domain.txt \n"
 httpx -l subdomains.$target_domain.txt -status-code -content-length -title -tech-detect -follow-redirects -o httpx.$target_domain.txt
 
 # Find the live sites using Httprobe
-cat subdomains.$target_domain.txt | httprobe > httprobe.$target_domain.txt
+echo -e "Finding live sites from urls.$target_domain.txt and saving into live.$target_domain.txt  file. \n"
+cat urls.$target_domain.txt | httprobe > live.$target_domain.txt
 
 # DNS Enumeration Result
 for domains in $(cat subdomains.$target_domain.txt);do dig $domains +noquestion +noauthority +noadditional +nostats | grep -wE "CNAME|A|NS";done > dns_result.$target_domain.txt
