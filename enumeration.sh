@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# findomain 
+# active scan puredns -> massdns
+# after getting all subs
+# naabu port scan
+
 # Get the target list from a text file
 read -p "Enter Your Target Name: " target_domain
 
