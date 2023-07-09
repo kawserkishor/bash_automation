@@ -1,6 +1,3 @@
-Sure, I can try to write a bash script for you. Here is what I came up with:
-
-```bash
 #!/bin/bash
 # A simple bash script to automate the recon process of bug bounty
 
