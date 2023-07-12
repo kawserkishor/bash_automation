@@ -15,9 +15,9 @@ mkdir -p $domain
 
 # Perform subdomain enumeration using Subfinder, Assetfinder and Amass
 echo "[+] Enumerating subdomains for $domain"
-subfinder -d $domain -silent | tee -a $domain/subdomains.txt
+subfinder -d $domain | tee -a $domain/subdomains.txt
 assetfinder --subs-only $domain | tee -a $domain/subdomains.txt
-amass enum -d $domain -silent | tee -a $domain/subdomains.txt
+amass enum -passive -norecursive -noalts -d $domain | tee -a $domain/subdomains.txt
 
 # Sort and remove duplicate subdomains
 echo "[+] Sorting and removing duplicate subdomains"
