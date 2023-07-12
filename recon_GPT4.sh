@@ -1,6 +1,10 @@
 #!/bin/bash
 # A simple bash script to automate the recon process of bug bounty
 
+# Variable declaration
+dns_wordlist="/usr/share/wordlists/seclists/Discovery/DNS/sortedcombined-knock-dnsrecon-fierce-reconng.txt"
+resolver="/usr/share/wordlists/resolvers.txt"
+
 # Check if a domain is provided as an argument
 if [ -z "$1" ]; then
   echo "Usage: ./recon.sh domain.com"
@@ -13,11 +17,14 @@ domain=$1
 # Create a directory for the domain
 mkdir -p $domain
 
-# Perform subdomain enumeration using Subfinder, Assetfinder and Amass
+# Perform subdomain enumeration using Subfinder, Assetfinder, and Amass
 echo "[+] Enumerating subdomains for $domain"
 subfinder -d $domain | tee -a $domain/subdomains.txt
 assetfinder --subs-only $domain | tee -a $domain/subdomains.txt
 amass enum -passive -norecursive -noalts -d $domain | tee -a $domain/subdomains.txt
+
+# Brute forcing subdomain enumeration using Puredns
+puredns bruteforce $dns_wordlist $domain --resolvers $resolver | tee -a $domain/subdomains.txt
 
 # Sort and remove duplicate subdomains
 echo "[+] Sorting and removing duplicate subdomains"
