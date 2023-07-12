@@ -43,7 +43,8 @@ cat $domain/live_subdomains.txt | aquatone -out $domain/aquatone
 
 # Perform port scanning using Nmap
 echo "[+] Performing port scanning"
-nmap -iL $domain/live_subdomains.txt -Pn -sV --min-rate 1000 -oA $domain/nmap
+#nmap -iL $domain/live_subdomains.txt -Pn -sV --min-rate 1000 -oA $domain/nmap
+naabu -l $domain/live_subdomains.txt -pf $commonPorts -ep 80,443 | anew $domain/naabu
 
 # Perform directory brute-forcing using Gobuster
 echo "[+] Performing directory brute-forcing"
