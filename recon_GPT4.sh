@@ -4,6 +4,7 @@
 # Variable declaration
 dns_wordlist="/usr/share/wordlists/seclists/Discovery/DNS/sortedcombined-knock-dnsrecon-fierce-reconng.txt"
 resolver="/usr/share/wordlists/resolvers.txt"
+commonPorts="/usr/share/worldlists/commonPorts.txt"
 
 # Check if a domain is provided as an argument
 if [ -z "$1" ]; then
@@ -35,7 +36,8 @@ sort -u $domain/subdomains.txt -o $domain/subdomains.txt
 
 # Check for live subdomains using httprobe
 echo "[+] Checking for live subdomains"
-cat $domain/subdomains.txt | httprobe | tee -a $domain/live_subdomains.txt
+# cat $domain/subdomains.txt | httprobe | tee -a $domain/live_subdomains.txt
+cat $domain/subdomains.txt | hrekt --status-code --server --tech-detect --title --follow-redirects | tee -a $domain/live_subdomains.txt
 
 # Take screenshots of live subdomains using Aquatone
 echo "[+] Taking screenshots of live subdomains"
@@ -44,7 +46,7 @@ cat $domain/live_subdomains.txt | aquatone -out $domain/aquatone
 # Perform port scanning using Nmap
 echo "[+] Performing port scanning"
 #nmap -iL $domain/live_subdomains.txt -Pn -sV --min-rate 1000 -oA $domain/nmap
-naabu -l $domain/live_subdomains.txt -pf $commonPorts -ep 80,443 | anew $domain/naabu
+naabu -l $domain/live_subdomains.txt -pf $commonPorts -ep 80,443 -o $domain/naabu
 
 # Perform directory brute-forcing using Gobuster
 echo "[+] Performing directory brute-forcing"
