@@ -80,7 +80,7 @@ done < $domain/live_subdomains.txt
 
 # Perform CORS scanning using CORScanner
 echo "[+] Performing CORS scanning"
-corscanner.py -i $domain/live_subdomains.txt -t 50 -o $domain/corscanner.csv
+corscanner -i $domain/live_subdomains.txt -t 50 -o $domain/corscanner.csv
 
 # Perform subdomain takeover scanning using Subjack and Subzy
 echo "[+] Performing subdomain takeover scanning"
@@ -98,11 +98,12 @@ gitrob scan https://github.com/$domain --no-server --threads 50 --output-folder=
 
 # Perform SSL/TLS analysis using Testssl.sh
 echo "[+] Performing SSL/TLS analysis"
-testssl.sh --file=$domain/live_subdomains.txt --quiet --color 0 >$domain/testssl.txt
+testssl --file=$domain/live_subdomains.txt --quiet --color 0 >$domain/testssl.txt
 
-# Perform DNS analysis using DNSdumpster
+# Perform DNS analysis using (DNSdumpster) DIG
 echo "[+] Performing DNS analysis"
-dnsdumpster $domain -r -o $domain/dnsdumpster
+# dnsdumpster $domain -r -o $domain/dnsdumpster
+for sub in $(cat $domain/live_subdomains.tx);do dig $sub +noquestion +noauthority +noadditional +nostats | grep -wE "CNAME|A";done > $domain/dig
 
 # Perform OSINT using theHarvester
 echo "[+] Performing OSINT"
