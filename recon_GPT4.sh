@@ -144,7 +144,8 @@ cat $domain/live_subdomains.txt >>$domain/report.md
 echo "## Screenshots" >>$domain/report.md
 ls $domain/aquatone/*.png | sed 's/^/![](/;s/$/)/' >>$domain/report.md
 echo "## Port Scanning" >>$domain/report.md
-cat $domain/nmap.nmap >>$domain/report.md
+#cat $domain/nmap.nmap >>$domain/report.md
+cat $domain/naabu >>$domain/report.md
 echo "## Directory Brute-Forcing" >>$domain/report.md
 ls $domain/gobuster/*.txt | xargs -I{} sh -c 'echo "### {}"; cat {}' >>$domain/report.md
 echo "## Content Discovery" >>$domain/report.md
@@ -164,14 +165,16 @@ echo "## Vulnerability Scanning" >>$domain/report.md
 cat $domain/nuclei.txt >>$domain/report.md
 echo "## Secret Scanning" >>$domain/report.md
 cat $domain/gitleaks.json >>$domain/report.md
-ls $doman/gitrob/*/*.json | xargs -I{} sh -c 'echo "### {}"; cat {}' >>$doman/report.md 
-echo "## SSL/TLS Analysis" >>$doman/report.md 
-cat $doman/testssl.txt >>$doman/report.md 
-echo "## DNS Analysis" >>$doman/report.md 
-cat $doman/dnsdumpster/dnsdumpster-$doman.html >>$doman/report.md 
-echo "## OSINT" >>$doman/report.md 
-cat $doman/theHarvester.html >>$doman/report.md 
-echo "## Email Enumeration" >>$doman/report.md 
-cat $doman/hunter.csv >>$doman/report.md 
-echo "## Social Media Analysis" >>$doman/report.md 
-ls $doman/sherlock/*.txt | xargs -I{} sh -c 'echo "### {}"; cat {}' >>$
+# from here below $domain was written as $doman. I changed this to $domain
+ls $domain/gitrob/*/*.json | xargs -I{} sh -c 'echo "### {}"; cat {}' >>$domain/report.md 
+echo "## SSL/TLS Analysis" >>$domain/report.md 
+cat $domain/testssl.txt >>$domain/report.md 
+echo "## DNS Analysis" >>$domain/report.md 
+#cat $doman/dnsdumpster/dnsdumpster-$doman.html >>$doman/report.md [commenting dnsdumpster and adding dig]
+cat $domain/dig/dig-$domain.html >>$domain/report.md
+echo "## OSINT" >>$domain/report.md 
+cat $domain/theHarvester.html >>$domain/report.md 
+echo "## Email Enumeration" >>$domain/report.md 
+cat $domain/hunter.csv >>$domain/report.md 
+echo "## Social Media Analysis" >>$domain/report.md 
+ls $domain/sherlock/*.txt | xargs -I{} sh -c 'echo "### {}"; cat {}' >>$domain/report.md
