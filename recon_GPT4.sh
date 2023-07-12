@@ -23,6 +23,9 @@ subfinder -d $domain | tee -a $domain/subdomains.txt
 assetfinder --subs-only $domain | tee -a $domain/subdomains.txt
 amass enum -passive -norecursive -noalts -d $domain | tee -a $domain/subdomains.txt
 
+# Perform subdomain enumeration from crt.sh
+crtsh -d $domain | tee -a $domain/subdomains.txt
+
 # Brute forcing subdomain enumeration using Puredns
 puredns bruteforce $dns_wordlist $domain --resolvers $resolver | tee -a $domain/subdomains.txt
 
