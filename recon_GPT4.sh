@@ -102,7 +102,7 @@ testssl --file=$domain/live_subdomains.txt --quiet --color 0 >$domain/testssl.tx
 
 # Perform DNS analysis using (DNSdumpster) DIG
 echo "[+] Performing DNS analysis"
-# dnsdumpster $domain -r -o $domain/dnsdumpster
+# python3 /opt/dnsdumpster/dnsdumpster.py $domain -r -o $domain/dnsdumpster
 for sub in $(cat $domain/live_subdomains.tx);do dig $sub +noquestion +noauthority +noadditional +nostats | grep -wE "CNAME|A";done > $domain/dig
 
 # Perform OSINT using theHarvester
@@ -111,7 +111,7 @@ theHarvester -d $domain -b all -f $domain/theHarvester.html
 
 # Perform email enumeration using Hunter.io
 echo "[+] Performing email enumeration"
-hunter --domain $domain --api-key <your-api-key> --output $domain/hunter.csv
+# hunter --domain $domain --api-key <your-api-key> --output $domain/hunter.csv (couldn't find installation link)
 
 # Perform social media analysis using Sherlock
 echo "[+] Performing social media analysis"
