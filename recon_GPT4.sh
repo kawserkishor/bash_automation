@@ -3,7 +3,7 @@
 
 # Variable declaration
 dns_wordlist="/usr/share/wordlists/seclists/Discovery/DNS/sortedcombined-knock-dnsrecon-fierce-reconng.txt"
-resolver="/usr/share/wordlists/resolvers.txt"
+resolver="/usr/share/wordlists/dns-resolvers/resolvers.txt"
 commonPorts="/usr/share/worldlists/commonPorts.txt"
 
 # Check if a domain is provided as an argument
