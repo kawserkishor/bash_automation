@@ -94,7 +94,7 @@ nuclei -l $domain/live_subdomains.txt -t ~/nuclei-templates/ -c 50 -o $domain/nu
 # Perform secret scanning using Gitleaks and Gitrob
 echo "[+] Performing secret scanning"
 gitleaks --repo-path=$domain/aquatone/screenshots/ --report=$domain/gitleaks.json --verbose --redact
-gitrob scan https://github.com/$domain --no-server --threads 50 --output-folder=$domain/gitrob/
+# gitrob scan https://github.com/$domain --no-server --threads 50 --output-folder=$domain/gitrob/ (couldn't install)
 
 # Perform SSL/TLS analysis using Testssl.sh
 echo "[+] Performing SSL/TLS analysis"
