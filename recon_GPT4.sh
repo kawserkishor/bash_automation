@@ -4,7 +4,7 @@
 # Variable declaration
 dns_wordlist="/usr/share/wordlists/seclists/Discovery/DNS/sortedcombined-knock-dnsrecon-fierce-reconng.txt"
 resolver="/usr/share/wordlists/dns-resolvers/resolvers.txt"
-commonPorts="/usr/share/worldlists/commonPorts.txt"
+commonPorts="/usr/share/wordlists/commonPorts.txt"
 
 # Check if a domain is provided as an argument
 if [ -z "$1" ]; then
@@ -36,17 +36,15 @@ sort -u $domain/subdomains.txt -o $domain/subdomains.txt
 
 # Check for live subdomains using httprobe
 echo "[+] Checking for live subdomains"
-# cat $domain/subdomains.txt | httprobe | tee -a $domain/live_subdomains.txt
-cat $domain/subdomains.txt | hrekt --status-code --server --tech-detect --title --follow-redirects | tee -a $domain/live_subdomains.txt
+cat $domain/subdomains.txt | httprobe | tee -a $domain/live_subdomains.txt
 
 # Take screenshots of live subdomains using Aquatone
 echo "[+] Taking screenshots of live subdomains"
 cat $domain/live_subdomains.txt | aquatone -out $domain/aquatone
 
-# Perform port scanning using Nmap
+# Perform port scanning using Naabu
 echo "[+] Performing port scanning"
-#nmap -iL $domain/live_subdomains.txt -Pn -sV --min-rate 1000 -oA $domain/nmap
-naabu -l $domain/live_subdomains.txt -pf $commonPorts -ep 80,443 -o $domain/naabu
+naabu -iL $domain/live_subdomains.txt -p $commonPorts -o $domain/naabu.txt
 
 # Perform directory brute-forcing using Gobuster
 echo "[+] Performing directory brute-forcing"
@@ -91,27 +89,21 @@ subzy -targets $domain/subdomains.txt --hide_fails --verify_ssl --concurrency 50
 echo "[+] Performing vulnerability scanning"
 nuclei -l $domain/live_subdomains.txt -t ~/nuclei-templates/ -c 50 -o $domain/nuclei.txt
 
-# Perform secret scanning using Gitleaks and Gitrob
+# Perform secret scanning using Gitleaks
 echo "[+] Performing secret scanning"
 gitleaks --repo-path=$domain/aquatone/screenshots/ --report=$domain/gitleaks.json --verbose --redact
-# gitrob scan https://github.com/$domain --no-server --threads 50 --output-folder=$domain/gitrob/ (couldn't install)
 
 # Perform SSL/TLS analysis using Testssl.sh
 echo "[+] Performing SSL/TLS analysis"
 testssl --file=$domain/live_subdomains.txt --quiet --color 0 >$domain/testssl.txt
 
-# Perform DNS analysis using (DNSdumpster) DIG
+# Perform DNS analysis using DIG
 echo "[+] Performing DNS analysis"
-# python3 /opt/dnsdumpster/dnsdumpster.py $domain -r -o $domain/dnsdumpster
-for sub in $(cat $domain/live_subdomains.tx);do dig $sub +noquestion +noauthority +noadditional +nostats | grep -wE "CNAME|A";done > $domain/dig
+for sub in $(cat $domain/live_subdomains.txt); do dig $sub +noquestion +noauthority +noadditional +nostats | grep -wE "CNAME|A"; done > $domain/dig.txt
 
 # Perform OSINT using theHarvester
 echo "[+] Performing OSINT"
 theHarvester -d $domain -b all -f $domain/theHarvester.html
-
-# Perform email enumeration using Hunter.io
-echo "[+] Performing email enumeration"
-# hunter --domain $domain --api-key <your-api-key> --output $domain/hunter.csv (couldn't find installation link)
 
 # Perform social media analysis using Sherlock
 echo "[+] Performing social media analysis"
@@ -144,8 +136,7 @@ cat $domain/live_subdomains.txt >>$domain/report.md
 echo "## Screenshots" >>$domain/report.md
 ls $domain/aquatone/*.png | sed 's/^/![](/;s/$/)/' >>$domain/report.md
 echo "## Port Scanning" >>$domain/report.md
-#cat $domain/nmap.nmap >>$domain/report.md
-cat $domain/naabu >>$domain/report.md
+cat $domain/naabu.txt >>$domain/report.md
 echo "## Directory Brute-Forcing" >>$domain/report.md
 ls $domain/gobuster/*.txt | xargs -I{} sh -c 'echo "### {}"; cat {}' >>$domain/report.md
 echo "## Content Discovery" >>$domain/report.md
@@ -165,16 +156,13 @@ echo "## Vulnerability Scanning" >>$domain/report.md
 cat $domain/nuclei.txt >>$domain/report.md
 echo "## Secret Scanning" >>$domain/report.md
 cat $domain/gitleaks.json >>$domain/report.md
-# from here below $domain was written as $doman. I changed this to $domain
-ls $domain/gitrob/*/*.json | xargs -I{} sh -c 'echo "### {}"; cat {}' >>$domain/report.md 
 echo "## SSL/TLS Analysis" >>$domain/report.md 
 cat $domain/testssl.txt >>$domain/report.md 
 echo "## DNS Analysis" >>$domain/report.md 
-#cat $doman/dnsdumpster/dnsdumpster-$doman.html >>$doman/report.md [commenting dnsdumpster and adding dig]
-cat $domain/dig/dig-$domain.html >>$domain/report.md
+cat $domain/dig.txt >>$domain/report.md
 echo "## OSINT" >>$domain/report.md 
 cat $domain/theHarvester.html >>$domain/report.md 
-echo "## Email Enumeration" >>$domain/report.md 
-cat $domain/hunter.csv >>$domain/report.md 
 echo "## Social Media Analysis" >>$domain/report.md 
 ls $domain/sherlock/*.txt | xargs -I{} sh -c 'echo "### {}"; cat {}' >>$domain/report.md
+
+echo "Report generation completed. Find the report at ./$domain/report.md"
